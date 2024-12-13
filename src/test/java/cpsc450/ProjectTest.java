@@ -145,6 +145,109 @@ class ProjectTest {
     assertTrue(kernel.equals(possibilityA) || kernel.equals(possibilityB));
   }
 
+  @Test
+  void mySeventhPositiveKernelTest() {  // modified star graph
+    Graph g = new AdjMatrix(5);
+    g.addEdge(0, 1); 
+    g.addEdge(1,2); 
+    g.addEdge(2,3); 
+    g.addEdge(3,4); 
+    g.addEdge(4,0); 
+    g.addEdge(1,3); 
+
+    Set<Integer> possibilityA = new HashSet<>();
+    possibilityA.add(0);
+    possibilityA.add(3);
+
+    Set<Integer> kernel = DigraphKernel.findKernelInefficent(g);
+    assertTrue(kernel.equals(possibilityA));
+  }
+
+  @Test
+  void myEighthPositiveKernelTest() {
+    Graph g = new AdjMatrix(4);
+    g.addEdge(0, 1); 
+    g.addEdge(0,2); 
+    g.addEdge(2,3); 
+
+    Set<Integer> possibilityA = new HashSet<>();
+    possibilityA.add(1);
+    possibilityA.add(3);
+
+    Set<Integer> kernel = DigraphKernel.findKernelInefficent(g);
+    assertTrue(kernel.equals(possibilityA));
+  }
+
+  @Test
+  void myNinthPositiveKernelTest() {
+    Graph g = new AdjMatrix(4);
+    g.addEdge(0,2); 
+    g.addEdge(1,2); 
+    g.addEdge(1,3); 
+    g.addEdge(3,2); 
+
+    Set<Integer> possibilityA = new HashSet<>();
+    possibilityA.add(2);
+
+    Set<Integer> kernel = DigraphKernel.findKernelInefficent(g);
+    assertTrue(kernel.equals(possibilityA));
+  }
+
+  @Test
+  void myTenthPositiveKernelTest() {
+    Graph g = new AdjMatrix(5);
+    g.addEdge(0,2); 
+    g.addEdge(0,3);
+    g.addEdge(1,2); 
+    g.addEdge(1,4); 
+    g.addEdge(3,1); 
+    g.addEdge(4,2);
+
+    Set<Integer> possibilityA = new HashSet<>();
+    possibilityA.add(2);
+    possibilityA.add(3);
+
+    Set<Integer> kernel = DigraphKernel.findKernelInefficent(g);
+    assertTrue(kernel.equals(possibilityA));
+  }
+  
+  @Test
+  void myEleventhPositiveKernelTest() {
+    Graph g = new AdjMatrix(5);
+    g.addEdge(0,2); 
+    g.addEdge(0,1); 
+    g.addEdge(1,2); 
+    g.addEdge(1,4); 
+    g.addEdge(2,4);
+    g.addEdge(3,0);
+    g.addEdge(3,1); 
+
+    Set<Integer> possibilityA = new HashSet<>();
+    possibilityA.add(0);
+    possibilityA.add(4);
+
+    Set<Integer> kernel = DigraphKernel.findKernelInefficent(g);
+    assertTrue(kernel.equals(possibilityA));
+  }
+
+  @Test
+  void myTwelfthPositiveKernelTest() {
+    Graph g = new AdjMatrix(5);
+    g.addEdge(0,1); 
+    g.addEdge(0,2); 
+    g.addEdge(0,3);
+    g.addEdge(1,2); 
+    g.addEdge(1,4); 
+    g.addEdge(2,4);
+    g.addEdge(3,1); 
+
+    Set<Integer> possibilityA = new HashSet<>();
+    possibilityA.add(0);
+    possibilityA.add(4);
+
+    Set<Integer> kernel = DigraphKernel.findKernelInefficent(g);
+    assertTrue(kernel.equals(possibilityA));
+  }
 
 
 
@@ -188,6 +291,45 @@ class ProjectTest {
     assertTrue(kernel.isEmpty());
   }
 
+  @Test
+  void myFourthNegativeKernelTestInefficent() {
+    Graph g = new AdjMatrix(4);
+    g.addEdge(0, 1); 
+    g.addEdge(1,0); 
+    g.addEdge(0,2); 
+    g.addEdge(2,3); 
+
+    Set<Integer> kernel = DigraphKernel.findKernelInefficent(g);
+    assertTrue(kernel.isEmpty());
+  }
+
+  @Test
+  void myFifthNegativeKernelTestInefficent() {
+    Graph g = new AdjMatrix(4);
+    g.addEdge(0, 2); 
+    g.addEdge(2,1); 
+    g.addEdge(1,3); 
+    g.addEdge(2,3); 
+    g.addEdge(3,2); 
+
+    Set<Integer> kernel = DigraphKernel.findKernelInefficent(g);
+    assertTrue(kernel.isEmpty());
+  }
+
+  @Test
+  void mySixthNegativeKernelTestInefficent() {  // star graph
+    Graph g = new AdjMatrix(5);
+    g.addEdge(0, 1); 
+    g.addEdge(1,2); 
+    g.addEdge(2,3); 
+    g.addEdge(3,4); 
+    g.addEdge(4,0); 
+
+    Set<Integer> kernel = DigraphKernel.findKernelInefficent(g);
+    assertTrue(kernel.isEmpty());
+  }
+
+  
 
   
 }
