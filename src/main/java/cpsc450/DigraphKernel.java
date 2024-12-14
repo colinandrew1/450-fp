@@ -25,9 +25,87 @@ public class DigraphKernel {
    * @param g The given directed, connected graph.
    * @returns a set of vertices that meet the conditions of independence and domination
    */
-  public static Set<Integer> findKernelInefficent(Graph g) {
-    Set<Integer> kernel = new HashSet<>();
-    return kernel;
+  public static Set<Integer> findKernelNaive(Graph g) {
+    int numVertices = g.vertices();
+    
+    // perform a full-DFS traversal from each vertex in the graph
+    for (int graphVertex = 0; graphVertex < numVertices; graphVertex++) {
+      Set<Integer> k = new HashSet<>();
+      boolean [] excluded = new boolean[numVertices];
+      Deque<Integer> stack = new LinkedList<>();
+      int[] vertices = new int[numVertices];
+
+      final int WHITE = 0;
+      final int GRAY = 1;
+      final int BLACK = 2;
+
+      for (int i = 0; i < numVertices; i++) {vertices[i] = WHITE;} 
+      for (int i = 0; i < numVertices; i++) {excluded[i]=false;}
+
+      for (int graphNode = 0; graphNode < numVertices; graphNode++) {
+        if (g.out(graphNode).isEmpty()) { // sink vertices must be in the kernel
+          k.add(graphNode);
+          for (Integer adjVertex : g.adj(graphNode)) {
+            excluded[adjVertex] = true;
+          }
+        }
+      }
+
+      // start of full dfs traversal
+      for (int i = graphVertex; i < graphVertex + numVertices; i++) {
+        int graphNode = i % numVertices; 
+  
+        if (vertices[graphNode] == WHITE) {
+          stack.addFirst(graphNode);
+  
+          while (!stack.isEmpty()) {
+            Integer currNode = stack.getFirst(); // peek the first element on the stack
+
+            if (!excluded[currNode]) {
+              k.add(currNode);  // if a vertex is not excluded, we add it to the kernel
+              for (Integer adjVertex : g.adj(currNode)) {
+                excluded[adjVertex] = true;
+              }
+            }
+
+            if (vertices[currNode] == WHITE) {
+              vertices[currNode] = GRAY;
+              Set <Integer> adjVertices = g.in(currNode);
+              for (Integer vertex : adjVertices) {
+                if (vertices[vertex] == WHITE) {
+                  stack.addFirst(vertex);
+                }
+              }
+            }
+            else if (vertices[currNode] == GRAY) {
+              vertices[currNode] = BLACK;
+              stack.removeFirst();
+            }
+            else {
+              stack.removeFirst();
+            }
+          }
+        }
+      }
+      // at this point we have a "candidate kernel" that meets the independent criterion. Now we must check domination criterion
+      boolean dominating = true;
+      for (int a = 0; a < numVertices && dominating; a++) {
+        if (excluded[a]) {
+          boolean hasKernelEdge = false;
+          for (Integer outVertex : g.out(a)) {
+            if (k.contains(outVertex)) {
+              hasKernelEdge = true;
+              break;
+            }
+          }
+          if (!hasKernelEdge) {
+            dominating = false;
+          }
+        }
+      }
+      if (dominating) {return k;}
+    }
+    return new HashSet<>();
   }
 
 
@@ -136,6 +214,7 @@ public class DigraphKernel {
     }
     return bipartite;
   }
+
 
 
 
