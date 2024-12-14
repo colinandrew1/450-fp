@@ -109,6 +109,84 @@ public class DigraphKernel {
   }
 
 
+  public static Set<Integer> findKernelOptimized(Graph g) {
+    int numVertices = g.vertices();
+    Set<Integer> k = new HashSet<>();
+
+
+    List<Integer> ts = topologicalSort(g);
+    if (!ts.isEmpty()) { // a topological sort exists, so its reverse order can be used to find a kernel
+      List<Integer> traversalOrder = ts.reversed();
+      boolean [] excluded = new boolean[numVertices];
+      for (int i = 0; i < numVertices; i++) {excluded[i]=false;}
+
+      for (int i = 0; i < numVertices; i++){
+        Integer graphNode = traversalOrder.get(i);
+        if (!excluded[graphNode]) {
+          k.add(graphNode);
+          for (Integer vertex : g.adj(graphNode)) {
+            excluded[vertex] = true;
+          }
+        }
+      }
+      return k;
+    }
+
+    if (bipartite(g)) { // if the graph is bipartite, we can perform dfs traversal from any vertex and return a kernel
+      Deque<Integer> stack = new LinkedList<>();
+      int[] vertices = new int[numVertices];
+
+      final int WHITE = 0;
+      final int GRAY = 1;
+      final int BLACK = 2;
+
+      for (int i = 0; i < numVertices; i++) {vertices[i] = WHITE;}
+
+    for (int i = 0; i < numVertices; i++) {vertices[i] = WHITE;}
+      boolean [] excluded = new boolean[numVertices];
+      for (int i = 0; i < numVertices; i++) {excluded[i]=false;}
+
+      for (int graphNode = 0; graphNode < numVertices; graphNode++) {
+        if (vertices[graphNode] == WHITE) {
+          stack.addFirst(graphNode);
+  
+          while (!stack.isEmpty()) {
+            Integer currNode = stack.getFirst(); // peek the first element on the stack
+
+            if (!excluded[currNode]) {
+              k.add(currNode);  // if a vertex is not excluded, we add it to the kernel
+              for (Integer adjVertex : g.adj(currNode)) {
+                excluded[adjVertex] = true;
+              }
+            }
+
+            if (vertices[currNode] == WHITE) {
+              vertices[currNode] = GRAY;
+              Set <Integer> adjVertices = g.in(currNode);
+              for (Integer vertex : adjVertices) {
+                if (vertices[vertex] == WHITE) {
+                  stack.addFirst(vertex);
+                }
+              }
+            }
+            else if (vertices[currNode] == GRAY) {
+              vertices[currNode] = BLACK;
+              stack.removeFirst();
+            }
+            else {
+              stack.removeFirst();
+            }
+          }
+        }
+      }
+      return k;
+    }
+
+    return findKernelNaive(g);
+
+  }
+
+
 
   /**
    * Computes a topological sort of the given directed graph, if one
