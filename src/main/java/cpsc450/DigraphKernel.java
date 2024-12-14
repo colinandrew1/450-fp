@@ -109,10 +109,16 @@ public class DigraphKernel {
   }
 
 
+   /**
+   * Finds the kernel of a directed graph. A kernel mets two conditions: Independent & Dominating
+   * Independent: No edge exists between any two pairs of vertices in the graph
+   * Dominating: Every Vertex not included in the kernel has an edge to a vertex in the kernel
+   * @param g The given directed, connected graph.
+   * @returns a set of vertices that meet the conditions of independence and domination
+   */
   public static Set<Integer> findKernelOptimized(Graph g) {
     int numVertices = g.vertices();
     Set<Integer> k = new HashSet<>();
-
 
     List<Integer> ts = topologicalSort(g);
     if (!ts.isEmpty()) { // a topological sort exists, so its reverse order can be used to find a kernel
@@ -183,9 +189,78 @@ public class DigraphKernel {
     }
 
     return findKernelNaive(g);
-
   }
 
+
+  public static Set<Integer> findKernelBruteForce(Graph g) {
+    List<Set<Integer>> allCombinations = new ArrayList<>();
+    generateCombinationsRecursive(new HashSet<>(), 0, g.vertices(), allCombinations);
+
+    for (Set<Integer> combo : allCombinations) {
+      // Check for independence
+      boolean isIndependent = true;
+      for (int i = 0; i < combo.size() - 1; i++) {
+        for (int j = i + 1; j < combo.size(); j++) {
+          int vertex1 = (int) combo.toArray()[i];
+          int vertex2 = (int) combo.toArray()[j];
+
+          if (g.hasEdge(vertex1, vertex2) || g.hasEdge(vertex2, vertex1)) {
+            isIndependent = false;
+            break; // No need to check further if the combination is not independent
+          }
+        }
+        if (!isIndependent) {
+          break;
+        }
+      }
+
+        // If the combination is independent, check if it's dominating
+        if (isIndependent) {
+          boolean isDominating = true;
+          for (int vertex = 0; vertex < g.vertices(); vertex++) {
+            // Skip the vertices already in the kernel (combo)
+            if (!combo.contains(vertex)) {
+              boolean hasEdgeToKernel = false;
+
+              for (int kernelVertex : combo) {
+                if (g.hasEdge(vertex, kernelVertex)) {
+                  hasEdgeToKernel = true;
+                  break;
+                }
+              }
+
+              if (!hasEdgeToKernel) {
+                isDominating = false;
+                break;
+              }
+            }
+          }
+
+          // If the combination is both independent and dominating, return it, otherwise return an empty set
+          if (isDominating) {
+            return combo;  // Return the kernel if both conditions are satisfied
+          }
+        }
+    }
+
+    return new HashSet<>();
+}
+
+
+  public static void generateCombinationsRecursive(Set<Integer> currentCombination, int idx, int numVertices, List<Set<Integer>> allCombinations) {
+    if (idx == numVertices) {
+        if (!currentCombination.isEmpty()) {
+            allCombinations.add(new HashSet<>(currentCombination));
+        }
+        return;
+    }
+
+    currentCombination.add(idx);
+    generateCombinationsRecursive(currentCombination, idx + 1, numVertices, allCombinations);
+
+    currentCombination.remove(idx);
+    generateCombinationsRecursive(currentCombination, idx + 1, numVertices, allCombinations);
+  }
 
 
   /**
